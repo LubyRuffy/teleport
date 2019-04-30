@@ -335,6 +335,9 @@ type transportParams struct {
 	sconn ssh.Conn
 	// server is the underlying SSH server. Used for dial back nodes.
 	server ServerHandler
+
+	// reverseTunnelServer holds all reverse tunnel connections.
+	reverseTunnelServer Server
 }
 
 // TunnelAuthDialer connects to the Auth Server through the reverse tunnel.
@@ -475,10 +478,29 @@ func proxyTransport(p *transportParams) {
 	// Loop over all servers and try and connect to one of them.
 	var err error
 	var conn net.Conn
+	var remoteCluster RemoteSite
 	for _, s := range servers {
-		conn, err = net.Dial("tcp", s)
-		if err == nil {
-			break
+		fmt.Printf("--> s=%v.\n", s)
+		if s == "0.0.0.0:4022" {
+			fmt.Printf("--> getting site.\n")
+			remoteCluster, err = p.reverseTunnelServer.GetLocalCluster()
+			fmt.Printf("--> err: %v.\n", err)
+			if err != nil {
+				continue
+			}
+			fmt.Printf("--> Dialing to: %v.\n", s)
+			conn, err = remoteCluster.Dial(DialParams{
+				Principals: []string{"1a6043ee-d562-4508-b5fa-09774dafdf2a.remote.example.com"},
+			})
+			fmt.Printf("--> done dailing: conn=%v, err=%v.\n", conn, err)
+			if err == nil {
+				break
+			}
+		} else {
+			conn, err = net.Dial("tcp", s)
+			if err == nil {
+				break
+			}
 		}
 
 		// Log the reason the connection failed.

@@ -24,7 +24,7 @@ import (
 	"golang.org/x/crypto/ssh/agent"
 
 	"github.com/gravitational/teleport/lib/auth"
-	"github.com/gravitational/trace"
+	//"github.com/gravitational/trace"
 )
 
 // DialParams is a list of parameters used to Dial to a node within a cluster.
@@ -52,12 +52,12 @@ type DialParams struct {
 
 // CheckAndSetDefaults makes sure the minimal parameters are set.
 func (d *DialParams) CheckAndSetDefaults() error {
-	if d.From == nil {
-		return trace.BadParameter("parameter From required")
-	}
-	if d.To == nil {
-		return trace.BadParameter("parameter To required")
-	}
+	//if d.From == nil {
+	//	return trace.BadParameter("parameter From required")
+	//}
+	//if d.To == nil {
+	//	return trace.BadParameter("parameter To required")
+	//}
 
 	return nil
 }
@@ -96,6 +96,7 @@ type RemoteSite interface {
 // Server is a TCP/IP SSH server which listens on an SSH endpoint and remote/local
 // sites connect and register with it.
 type Server interface {
+	GetLocalCluster() (RemoteSite, error)
 	// GetSites returns a list of connected remote sites
 	GetSites() []RemoteSite
 	// GetSite returns remote site this node belongs to

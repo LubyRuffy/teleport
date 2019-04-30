@@ -165,6 +165,7 @@ func (s *localSite) Dial(params DialParams) (net.Conn, error) {
 
 	// Try and see if any of the principals match a node that is heartbeating
 	// over the tunnel. If a matching node is found, connect to it over the tunnel.
+	fmt.Printf("--> have rconns: %v.\n", s.remoteConns)
 	rconn, ok := s.findMatchingConn(params.Principals)
 	if ok {
 		return s.chanTransportConn(rconn)

@@ -267,6 +267,14 @@ func NewServer(cfg Config) (Server, error) {
 	return srv, nil
 }
 
+func (s *server) GetLocalCluster() (RemoteSite, error) {
+	fmt.Printf("--> GetLocalCluster: %v.\n", s)
+	if len(s.localSites) == 0 {
+		return nil, trace.BadParameter("hey i have no local sites?")
+	}
+	return s.localSites[0], nil
+}
+
 func remoteClustersMap(rc []services.RemoteCluster) map[string]services.RemoteCluster {
 	out := make(map[string]services.RemoteCluster)
 	for i := range rc {
